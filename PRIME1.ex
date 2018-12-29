@@ -1,4 +1,10 @@
-defmodule Prime do
+defmodule Input do
+  def get_testcase_count() do
+    IO.gets("")
+    |> String.trim()
+    |> String.to_integer()
+  end
+
   def range_from(input) do
     String.trim(input)
     |> String.split()
@@ -13,47 +19,57 @@ defmodule Prime do
     |> String.to_integer()
   end
 
-  def range(range_from, range_to) do
-  # IO.inspect(range_from)
-  # IO.inspect(range_to)
-    Enum.to_list(range_from..range_to)
-    |> IO.inspect()
+  def handle_testcase(0, _iterator) do
   end
 
-  # def list_primes(list, 0) do
-  #   List.pop_at(list, 0)
-  #   |> IO.inspect()
-  # end
+  def handle_testcase(testcase, iterator) do
+    input = IO.gets("")
+    range_from = range_from(input)
+    range_to = range_to(input)
+    range = Enum.to_list(range_from..range_to)
 
-  def list_primes(range, divisors) do
-    iterator = -1
-    inspected_number = List.pop_at(list, iterator + 1)
-    divisor =
-    unless inspected_number >= divisor do
-    cond do
-     mod(inspected_number, divisor) == 0 -> List.delete(list, inspected_number)
-     true ->
-    # |> IO.inspect()
+    starter = range_to - range_from
 
-end
-end
-end
+    checked_number = Enum.at(range, starter)
+    divisor = checked_number - 1
 
+    Prime.number_selector(range, range, starter, divisor)
+    |> Enum.each(&IO.inspect/1)
 
-    list_primes(list, iterator - 1)
+    IO.puts("")
+    handle_testcase(testcase - 1, iterator + 1)
   end
 end
 
-input = IO.gets("Give a range:")
+defmodule Prime do
+  def number_selector(_range, working_list, -1, _divisor) do
+    working_list
+  end
 
-range_from = Prime.range_from(input)
+  def number_selector(range, working_list, starter, _divisor) do
+    checked_number = Enum.at(range, starter)
+    divisor = checked_number - 1
+    new_list = number_verifier(range, working_list, checked_number, divisor)
+    number_selector(range, new_list, starter - 1, divisor)
+  end
 
-range_to = Prime.range_to(input)
+  def number_verifier(_range, working_list, _checked_number, 0) do
+    List.delete(working_list, 1)
+  end
 
-range = Prime.range(range_from, range_to)
+  def number_verifier(range, working_list, checked_number, divisor) do
+    new_list =
+      cond do
+        divisor >= 2 and rem(checked_number, divisor) == 0 ->
+          List.delete(working_list, checked_number)
 
-# iterator = range_to - range_from
+        true ->
+          working_list
+      end
 
-Prime.list_primes(range, divisor)
+    number_verifier(range, new_list, checked_number, divisor - 1)
+  end
+end
 
-divisor = Enum.to_list[2..range_to]
+testcase = Input.get_testcase_count()
+Input.handle_testcase(testcase, 1)
